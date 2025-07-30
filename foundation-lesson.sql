@@ -77,6 +77,34 @@ WHERE
 	ps.Hospital IN ('Kingston', 'PRUH');
 	--WHERE ps.Hospital LIKE 'Kin%'
 
+SELECT
+    ps.PatientId
+    ,ps.AdmittedDate
+    ,ps.Hospital
+    ,ps.Ward
+    ,ps.Tariff
+FROM
+    PatientStay ps
+WHERE ps.Hospital = 'Kingston' OR ps.Hospital = 'PRUH';
+
+SELECT
+    ps.PatientId
+    ,ps.AdmittedDate
+    ,ps.Hospital
+	,DATEADD(WEEK , -2 , ps.AdmittedDate) AS ReminderDate
+	,DATEADD(MONTH , 3 , ps.DischargeDate) AS AppoinmentDate
+	,DATEDIFF(DAYS , ps.AdmittedDate , ps.DischargeDate) AS DAYSInHospital
+    ,ps.Ward
+    ,ps.Tariff
+FROM
+    PatientStay ps
+WHERE ps.Hospital IN ('Kingston', 'PRUH' )
+    AND ps.Ward LIKE '%Surgery'
+    AND ps.AdmittedDate BETWEEN DATEFROMPARTS(2025 , 07 , 30) AND DATEFROMPARTS(2025 , 07 , 30)
+ORDER BY ps.AdmittedDate DESC , ps.Ward ASC
+
+SELECT DATEFROMPARTS(2025 , 07 , 30) AS THEDATE
+
 /*
 Sort: by the values of one or more columns with the ORDER BY clause
 Sorts smallest to largest (ASCending) by default
@@ -210,3 +238,12 @@ FROM
 	PatientStay ps
 JOIN DimHospital h ON
 	ps.Hospital = h.Hospital;
+
+
+
+
+SELECT *
+FROM PatientStay
+
+SELECT COUNT(*) AS NumberOfPatients , SUM(Tariff) AS TotalTariff , AVG(Tariff) AS AverageTariff
+FROM PatientStay
